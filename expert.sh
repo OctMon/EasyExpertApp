@@ -9,7 +9,6 @@ project=`find . -name *.xcodeproj | awk -F "[/.]" '{print $(NF-1)}'`
 workspace="true"
 ## TARGETS对应的Scheme 默认项目名称
 scheme=$project
-# scheme=$project
 ## TARGETS对应的plist 不需要加后缀 默认Info.plist
 info="Info"
 ## Release or Debug 默认Release
@@ -17,6 +16,27 @@ configuration="Release"
 ## 蒲公英APIKey  https://www.pgyer.com/account/api
 pgyer_api_key=""
 ##=========================================================================
+
+##================================填写更新日志================================
+rm -rf update_log
+touch update_log
+open update_log
+
+read -p "更新日志(同一条日志不要有空格)写好后按回车继续 " answer
+
+count=1
+history=""
+for line in $(cat update_log)
+do 
+    history+="[${count}] ${line}.  "
+    count=$[$count+1]
+done
+
+rm -rf update_log
+update_log="$history    *https://github.com/OctMon/EasyExpertApp 自动构建*"
+echo "更新日志:"
+echo $update_log
+##==========================================================================
 
 ##================================选择打包方式================================
 echo "\033[41;1m输入序号,选择打包方式,按回车继续 \033[0m"
@@ -83,8 +103,8 @@ xcodebuild  -exportArchive \
 
 mv $path_archive $path_package
 
-#上传到pgy
-curl -F "file=@${path_package}/${scheme}.ipa" -F "_api_key=${pgyer_api_key}" -F "buildUpdateDescription=EasyExpertApp自动构建($bundle_build)" https://www.pgyer.com/apiv2/app/upload
+#上传到pgyer
+curl -F "file=@${path_package}/${scheme}.ipa" -F "_api_key=${pgyer_api_key}" -F "buildUpdateDescription=$update_log  ($bundle_build)" https://www.pgyer.com/apiv2/app/upload
 
 echo
 echo "** 上传完成 用时: ${SECONDS}s **"
