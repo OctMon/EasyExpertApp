@@ -5,8 +5,10 @@ SECONDS=0
 project=`find . -name *.xcodeproj | awk -F "[/.]" '{print $(NF-1)}'`
 
 ##========================根据实际情况修改(一般不用修改)========================
-## true or false
-workspace="true"
+## true or false 默认true
+is_workspace="true"
+## 提交版本变更到远程仓库 true or false 默认true
+is_git_push="true"
 ## 打包方式对应的TARGETS 默认项目名称
 target_development=${project}
 target_adhoc=${project}
@@ -114,6 +116,7 @@ fi
 
 path_info_plist="${project}/${info}.plist"
 bundle_build=`/usr/libexec/PlistBuddy -c "Print CFBundleVersion" ${path_info_plist}`
+bundle_version=`/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" ${path_info_plist}`
 
 path_package="${path_build}/${target}_${bundle_build}"
 
@@ -134,6 +137,24 @@ echo
 else
 exit 1
 fi
+
+if $is_git_push ; then
+echo ""
+
+echo "--------------------------------------------------------------------------------"
+
+echo ""
+
+git add "${path_info_plist}"
+git commit -m "[${bundle_build}] ${target} version ${bundle_version}"
+git push
+
+echo ""
+
+echo "--------------------------------------------------------------------------------"
+fi
+
+echo
 
 if [ -n "${pgyer_api_key}" ] ; then
 #上传到pgyer
