@@ -106,7 +106,7 @@ fi
 ##==========================================================================
 
 if [ -d "${path_archive}" ] ; then
-echo "** Finished archive. Total time: ${SECONDS}s **"
+echo "** Finished archive. Elapsed time: ${SECONDS}s **"
 echo
 else
 exit 1
@@ -129,7 +129,7 @@ mv $path_archive $path_package
 file_ipa="${path_package}/${target}.ipa"
 
 if [ -f "${file_ipa}" ] ; then
-echo "** Finished export. Total time: ${SECONDS}s **"
+echo "** Finished export. Elapsed time: ${SECONDS}s **"
 echo
 else
 exit 1
@@ -140,7 +140,14 @@ if [ -n "${pgyer_api_key}" ] ; then
 curl -F "file=@${file_ipa}" -F "_api_key=${pgyer_api_key}" -F "buildUpdateDescription=${update_log}      *https://github.com/OctMon/EasyExpertApp build(${bundle_build})*" https://www.pgyer.com/apiv2/app/upload
 echo
 echo
-echo "** Finished upload. Total time: ${SECONDS}s **"
+echo "--------------------------------------------------------------------------------"
+echo "🎉  Congrats"
+
+echo "🚀  ${target} (${bundle_build}) successfully published"
+echo "📅  Finished. Elapsed time: ${SECONDS}s"
+echo "🌎  https://github.com/OctMon/EasyExpertApp"
+echo "👍  Tell your friends!"
+echo "--------------------------------------------------------------------------------"
 else
 echo "** 如果需要上传到pgyer 请填写蒲公英APIKey  https://www.pgyer.com/account/api **"
 open ${path_package}
