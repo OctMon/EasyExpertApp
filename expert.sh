@@ -137,6 +137,8 @@ fi
 
 if [ -n "${pgyer_api_key}" ] ; then
 #上传到pgyer
+echo "正在上传到pgyer..."
+echo
 curl -F "file=@${file_ipa}" -F "_api_key=${pgyer_api_key}" -F "buildUpdateDescription=${update_log}      *https://github.com/OctMon/EasyExpertApp build(${bundle_build})*" https://www.pgyer.com/apiv2/app/upload
 echo
 echo
@@ -148,7 +150,9 @@ echo "📅  Finished. Elapsed time: ${SECONDS}s"
 echo "🌎  https://github.com/OctMon/EasyExpertApp"
 echo "👍  Tell your friends!"
 echo "--------------------------------------------------------------------------------"
+say "打包并上传成功"
 else
+say "打包成功"
 echo "** 如果需要上传到pgyer 请填写蒲公英APIKey  https://www.pgyer.com/account/api **"
 open ${path_package}
 fi
