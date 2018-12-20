@@ -19,12 +19,14 @@ info_appstore="Info"
 info_enterprise="Info"
 ## Release or Debug 默认Release
 configuration="Release"
-## 蒲公英APIKey  https://www.pgyer.com/account/api
+## pgyer APIKey  https://www.pgyer.com/account/api
 pgyer_api_key=""
+## fir APIKey  https://fir.im/apps
+fir_api_token=""
 ##=========================================================================
 
 ##================================填写更新日志================================
-if [ -n "${pgyer_api_key}" ] ; then
+if [ -n "${pgyer_api_key}" -o  -n "${fir_api_token}" ] ; then
 rm -rf update_log
 touch update_log
 open update_log
@@ -134,7 +136,8 @@ file_ipa="${path_package}/${target}.ipa"
 
 if [ -f "${file_ipa}" ] ; then
 echo "** Finished export. Elapsed time: ${SECONDS}s **"
-echo
+say "打包成功"
+open ${path_package}
 else
 exit 1
 fi
@@ -147,21 +150,21 @@ echo "正在上传到pgyer..."
 echo
 curl -F "file=@${file_ipa}" -F "_api_key=${pgyer_api_key}" -F "buildUpdateDescription=${update_log}      *https://github.com/OctMon/EasyExpertApp build(${bundle_build})*" https://www.pgyer.com/apiv2/app/upload
 echo
+say "上传pgyer成功"
 echo
-echo "--------------------------------------------------------------------------------"
-echo "🎉  Congrats"
-
-echo "🚀  ${target} (${bundle_build}) successfully published"
-echo "📅  Finished. Elapsed time: ${SECONDS}s"
-echo "🌎  https://github.com/OctMon/EasyExpertApp"
-echo "👍  Tell your friends!"
-echo "--------------------------------------------------------------------------------"
-say "打包并上传成功"
-else
-say "打包成功"
-echo "** 如果需要上传到pgyer 请填写蒲公英APIKey  https://www.pgyer.com/account/api **"
-open ${path_package}
 fi
+
+if [ -n "${fir_api_token}" ] ; then
+#上传到fir
+echo "正在上传到fir..."
+echo
+fir publish "${file_ipa}" -T "${fir_api_token}" -c "${update_log}"
+echo
+say "上传fir成功"
+echo
+fi
+
+echo "** Finished upload. Elapsed time: ${SECONDS}s **"
 
 echo
 
@@ -184,6 +187,17 @@ git add "${path_info_plist}"
 git commit -m "[${bundle_build}] ${target} version ${bundle_version}"
 git push
 
+echo "--------------------------------------------------------------------------------"
+
+echo
+
+echo "--------------------------------------------------------------------------------"
+echo "🎉  Congrats"
+
+echo "🚀  ${target} (${bundle_build}) successfully published"
+echo "📅  Finished. Elapsed time: ${SECONDS}s"
+echo "🌎  https://github.com/OctMon/EasyExpertApp"
+echo "👍  Tell your friends!"
 echo "--------------------------------------------------------------------------------"
 
 echo
