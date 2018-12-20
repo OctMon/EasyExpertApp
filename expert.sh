@@ -26,10 +26,12 @@ pgyer_api_key=""
 ##=========================================================================
 
 ##================================填写更新日志================================
+if [ -n "${pgyer_api_key}" ] ; then
 rm -rf update_log
 touch update_log
 open update_log
 
+say "更新日志(同一条日志不要有空格)写好后按回车继续"
 read -p "更新日志(同一条日志不要有空格)写好后按回车继续 " answer
 
 count=1
@@ -44,6 +46,7 @@ rm -rf update_log
 update_log=${history}
 echo "更新日志:"
 echo ${update_log}
+fi
 ##==========================================================================
 
 ##================================选择打包方式================================
@@ -60,19 +63,19 @@ info=""
 if [ -n ${method} ]
 then
 if [ ${method} = "1" ] ; then
-path_export_options="development.plist"
+path_export_options="EasyExpertApp/development.plist"
 target=${target_development}
 info=${info_development}
 elif [ ${method} = "2" ] ; then
-path_export_options="ad-hoc.plist"
+path_export_options="EasyExpertApp/ad-hoc.plist"
 target=${target_adhoc}
 info=${info_adhoc}
 elif [ ${method} = "3" ] ; then
-path_export_options="app-store.plist"
+path_export_options="EasyExpertApp/app-store.plist"
 target=${target_appstore}
 info=${info_appstore}
 elif [ ${method} = "4" ] ; then
-path_export_options="enterprise.plist"
+path_export_options="EasyExpertApp/enterprise.plist"
 target=${target_enterprise}
 info=${info_enterprise}
 else
