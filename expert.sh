@@ -170,14 +170,16 @@ fi
 
 if [ -n "${pgyer_api_key}" -o  -n "${fir_api_token}" ] ; then
 echo "** Finished upload. Elapsed time: ${SECONDS}s **"
-
 echo
-read -p "删除${path_package}? (y/n):" delete_path_package
-if [ "$delete_path_package" == "y" -o "$delete_path_package" == "Y" ]; then
+while [ "$confirmed" != "y" -a "$confirmed" != "Y" -a "$confirmed" != "n" -a "$confirmed" != "N" ]
+do
+read -p "删除${path_package}? (y/n):" confirmed
+done
+if [ "$confirmed" == "y" -o "$confirmed" == "Y" ]; then
 rm -rf ${path_package}
 fi
-
 fi
+unset confirmed
 
 echo
 
@@ -186,20 +188,18 @@ echo
 echo "[${bundle_build}] ${target} version ${bundle_version}"
 echo "提交版本变更到远程仓库?"
 
-while [ "$confirmed" != "y" -a "$confirmed" != "Y" ]
+while [ "$confirmed" != "y" -a "$confirmed" != "Y" -a "$confirmed" != "n" -a "$confirmed" != "N" ]
 do
-if [ "$confirmed" == "n" -o "$confirmed" == "N" ]; then
-exit 1
-fi
-read -p "confirm? (y/n):" confirmed
+read -p "提交版本变更到远程仓库? (y/n):" confirmed
 done
-
+if [ "$confirmed" == "y" -o "$confirmed" == "Y" ]; then
 echo
-
 git add "${path_info_plist}"
 git commit -m "[${bundle_build}] ${target} version ${bundle_version}"
 git push
-
+fi
+unset confirmed
+echo
 echo "--------------------------------------------------------------------------------"
 
 echo
