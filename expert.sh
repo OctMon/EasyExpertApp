@@ -50,6 +50,9 @@ fi
 ##==========================================================================
 
 ##================================选择打包方式================================
+if [ -n "$1" ]; then
+method="$1"
+else
 echo "\033[41;1m输入序号,选择打包方式,按回车继续 \033[0m"
 echo "\033[31;1m1. development \033[0m"
 echo "\033[32;1m2. ad-hoc      \033[0m"
@@ -57,6 +60,7 @@ echo "\033[33;1m3. app-store   \033[0m"
 echo "\033[34;1m4. enterprise  \033[0m"
 read parameter
 method=${parameter}
+fi
 path_export_options=""
 target=""
 info=""
@@ -130,7 +134,7 @@ xcodebuild  -exportArchive \
 -exportOptionsPlist ${path_export_options}
 ##==========================================================================
 
-mv $path_archive $path_package
+mv -f $path_archive $path_package
 
 file_ipa="${path_package}/${target}.ipa"
 
@@ -164,7 +168,9 @@ say "上传fir成功"
 echo
 fi
 
+if [ -n "${pgyer_api_key}" -o  -n "${fir_api_token}" ] ; then
 echo "** Finished upload. Elapsed time: ${SECONDS}s **"
+fi
 
 echo
 
