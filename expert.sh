@@ -186,8 +186,6 @@ echo
 echo "--------------------------------------------------------------------------------"
 echo
 echo "[${bundle_build}] ${target} version ${bundle_version}"
-echo "提交版本变更到远程仓库?"
-
 while [ "$confirmed" != "y" -a "$confirmed" != "Y" -a "$confirmed" != "n" -a "$confirmed" != "N" ]
 do
 read -p "提交版本变更到远程仓库? (y/n):" confirmed
