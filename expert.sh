@@ -170,6 +170,13 @@ fi
 
 if [ -n "${pgyer_api_key}" -o  -n "${fir_api_token}" ] ; then
 echo "** Finished upload. Elapsed time: ${SECONDS}s **"
+
+echo
+read -p "删除${path_package}? (y/n):" delete_path_package
+if [ "$delete_path_package" == "y" -o "$delete_path_package" == "Y" ]; then
+rm -rf ${path_package}
+fi
+
 fi
 
 echo
