@@ -19,6 +19,7 @@ info_appstore="Info"
 info_enterprise="Info"
 ## Release or Debug 默认Release
 configuration="Release"
+path_build="build"
 ## pgyer APIKey  https://www.pgyer.com/account/api
 pgyer_api_key=""
 ## fir APIKey  https://fir.im/apps
@@ -26,26 +27,32 @@ fir_api_token=""
 ##=========================================================================
 
 ##================================填写更新日志================================
+funcUpdateLog() {
 if [ -n "${pgyer_api_key}" -o  -n "${fir_api_token}" ] ; then
-rm -rf update_log
-touch update_log
-open update_log
+rm -rf "${path_build}/update_log.txt"
+touch "${path_build}/update_log.txt"
+open "${path_build}/update_log.txt"
 
 say "更新日志(同一条日志不要有空格)写好后按回车继续"
 read -p "更新日志(同一条日志不要有空格)写好后按回车继续 " answer
 
 count=1
 history=""
-for line in $(cat update_log)
+for line in $(cat "${path_build}/update_log.txt")
 do
 history+="[${count}] ${line}.  "
 count=$[${count}+1]
 done
-
-rm -rf update_log
 update_log=${history}
 echo "更新日志:"
 echo ${update_log}
+fi
+}
+if [ -d "${path_build}" ] ; then
+funcUpdateLog
+else
+mkdir -pv "${path_build}"
+funcUpdateLog
 fi
 ##==========================================================================
 
@@ -89,7 +96,6 @@ fi
 fi
 ##==========================================================================
 
-path_build=build
 path_archive="${path_build}/${target}.xcarchive"
 
 ##===================================归档====================================
@@ -135,6 +141,7 @@ xcodebuild  -exportArchive \
 ##==========================================================================
 
 mv -f $path_archive $path_package
+mv -f "${path_build}/update_log.txt" $path_package
 
 file_ipa="${path_package}/${target}.ipa"
 
