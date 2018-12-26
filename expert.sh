@@ -148,7 +148,6 @@ file_ipa="${path_package}/${target}.ipa"
 if [ -f "${file_ipa}" ] ; then
 echo "** Finished export. Elapsed time: ${SECONDS}s **"
 say "打包成功"
-open ${path_package}
 else
 exit 1
 fi
@@ -219,3 +218,7 @@ echo "👍  Tell your friends!"
 echo "--------------------------------------------------------------------------------"
 
 echo
+
+if [ -f "${file_ipa}" ] ; then
+    open ${path_package}
+fi
