@@ -20,6 +20,8 @@ info_enterprise="Info"
 ## Release or Debug 默认Release
 configuration="Release"
 path_build="build"
+## 自动修改build方式  不修改:none 跟随时间变化:date 自动加1:number
+auto_build="number"
 ## pgyer APIKey  https://www.pgyer.com/account/api
 pgyer_api_key=""
 ## fir APIKey  https://fir.im/apps
@@ -73,6 +75,19 @@ then
 fi
 
 path_info_plist="${project}/${info}.plist"
+
+if [ "${auto_build}" = "date" ]
+then
+    #跟随时间变化
+    buildDate=$(date +%Y%m%d%H%M%S)
+    /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildDate" "$path_info_plist"
+elif [ "${auto_build}" = "number" ]
+then
+    #自动加1
+    buildNumber=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$path_info_plist")
+    buildNumber=$(($buildNumber + 1))
+    /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" "$path_info_plist"
+fi
 bundle_build=`/usr/libexec/PlistBuddy -c "Print CFBundleVersion" ${path_info_plist}`
 bundle_version=`/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" ${path_info_plist}`
 
@@ -82,9 +97,6 @@ path_archive="${path_package}/${target}.xcarchive"
 
 ##================================填写更新日志================================
 funcUpdateLog() {
-    echo "输入更新日志"
-    say "输入更新日志"
-
     if [ -d "${path_package}" ]
     then
         echo "目录${path_package}已存在"
@@ -92,6 +104,9 @@ funcUpdateLog() {
         echo "创建目录${path_package}"
         mkdir -pv "${path_package}"
     fi
+
+    echo "输入更新日志"
+    say "输入更新日志"
 
     if [ -n "${pgyer_api_key}" -o  -n "${fir_api_token}" ]
     then
@@ -246,6 +261,7 @@ echo "--------------------------------------------------------------------------
 
 echo
 
-if [ -f "${file_ipa}" ] ; then
+if [ -f "${file_ipa}" ]
+then
     open ${path_package}
 fi
