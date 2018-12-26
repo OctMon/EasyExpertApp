@@ -26,105 +26,50 @@ pgyer_api_key=""
 fir_api_token=""
 ##=========================================================================
 
-##================================填写更新日志================================
-funcUpdateLog() {
-if [ -n "${pgyer_api_key}" -o  -n "${fir_api_token}" ] ; then
-rm -rf "${path_build}/update_log.txt"
-touch "${path_build}/update_log.txt"
-open "${path_build}/update_log.txt"
-
-say "更新日志(同一条日志不要有空格)写好后按回车继续"
-read -p "更新日志(同一条日志不要有空格)写好后按回车继续 " answer
-
-count=1
-history=""
-for line in $(cat "${path_build}/update_log.txt")
-do
-history+="[${count}] ${line}.  "
-count=$[${count}+1]
-done
-update_log=${history}
-echo "更新日志:"
-echo ${update_log}
-fi
-}
-if [ -d "${path_build}" ] ; then
-funcUpdateLog
-else
-mkdir -pv "${path_build}"
-funcUpdateLog
-fi
-##==========================================================================
-
 ##================================选择打包方式================================
-if [ -n "$1" ]; then
-method="$1"
+if [ -n "$1" ]
+then
+    method="$1"
 else
-echo "\033[41;1m输入序号,选择打包方式,按回车继续 \033[0m"
-echo "\033[31;1m1. development \033[0m"
-echo "\033[32;1m2. ad-hoc      \033[0m"
-echo "\033[33;1m3. app-store   \033[0m"
-echo "\033[34;1m4. enterprise  \033[0m"
-read parameter
-method=${parameter}
+    echo "\033[41;1m输入序号,选择打包方式,按回车继续 \033[0m"
+    echo "\033[31;1m1. development \033[0m"
+    echo "\033[32;1m2. ad-hoc      \033[0m"
+    echo "\033[33;1m3. app-store   \033[0m"
+    echo "\033[34;1m4. enterprise  \033[0m"
+    read parameter
+    method=${parameter}
 fi
+
 path_export_options=""
 target=""
 info=""
+
 if [ -n ${method} ]
 then
-if [ ${method} = "1" ] ; then
-path_export_options="EasyExpertApp/development.plist"
-target=${target_development}
-info=${info_development}
-elif [ ${method} = "2" ] ; then
-path_export_options="EasyExpertApp/ad-hoc.plist"
-target=${target_adhoc}
-info=${info_adhoc}
-elif [ ${method} = "3" ] ; then
-path_export_options="EasyExpertApp/app-store.plist"
-target=${target_appstore}
-info=${info_appstore}
-elif [ ${method} = "4" ] ; then
-path_export_options="EasyExpertApp/enterprise.plist"
-target=${target_enterprise}
-info=${info_enterprise}
-else
-echo "参数错误"
-exit 1
-fi
-fi
-##==========================================================================
-
-path_archive="${path_build}/${target}.xcarchive"
-
-##===================================归档====================================
-if $is_workspace ; then
-xcodebuild clean -workspace ${project}.xcworkspace \
--scheme ${target} \
--configuration ${configuration}
-
-xcodebuild archive -workspace ${project}.xcworkspace \
--scheme ${target} \
--configuration ${configuration} \
--archivePath ${path_archive}
-else
-xcodebuild clean -project ${project}.xcodeproj \
--scheme ${target} \
--configuration ${configuration}
-
-xcodebuild archive -project ${project}.xcodeproj \
--scheme ${target} \
--configuration ${configuration} \
--archivePath ${path_archive}
-fi
-##==========================================================================
-
-if [ -d "${path_archive}" ] ; then
-echo "** Finished archive. Elapsed time: ${SECONDS}s **"
-echo
-else
-exit 1
+    if [ ${method} = "1" ]
+    then
+        path_export_options="EasyExpertApp/development.plist"
+        target=${target_development}
+        info=${info_development}
+    elif [ ${method} = "2" ]
+    then
+        path_export_options="EasyExpertApp/ad-hoc.plist"
+        target=${target_adhoc}
+        info=${info_adhoc}
+    elif [ ${method} = "3" ]
+    then
+        path_export_options="EasyExpertApp/app-store.plist"
+        target=${target_appstore}
+        info=${info_appstore}
+    elif [ ${method} = "4" ]
+    then
+        path_export_options="EasyExpertApp/enterprise.plist"
+        target=${target_enterprise}
+        info=${info_enterprise}
+    else
+        echo "参数错误"
+        exit 1
+    fi
 fi
 
 path_info_plist="${project}/${info}.plist"
@@ -132,6 +77,82 @@ bundle_build=`/usr/libexec/PlistBuddy -c "Print CFBundleVersion" ${path_info_pli
 bundle_version=`/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" ${path_info_plist}`
 
 path_package="${path_build}/${target}_${bundle_build}"
+path_archive="${path_package}/${target}.xcarchive"
+##==========================================================================
+
+##================================填写更新日志================================
+funcUpdateLog() {
+    echo "输入更新日志"
+    say "输入更新日志"
+
+    if [ -d "${path_package}" ]
+    then
+        echo "目录${path_package}已存在"
+    else
+        echo "创建目录${path_package}"
+        mkdir -pv "${path_package}"
+    fi
+
+    if [ -n "${pgyer_api_key}" -o  -n "${fir_api_token}" ]
+    then
+        rm -rf "${path_package}/update_log.txt"
+        touch "${path_package}/update_log.txt"
+        vim "${path_package}/update_log.txt"
+
+        count=1
+        history=""
+
+        for line in $(cat "${path_package}/update_log.txt")
+        do
+            history+="[${count}] ${line}.  "
+            count=$[${count}+1]
+        done
+        
+        update_log=${history}
+        echo "更新日志:"
+        echo ${update_log}
+    fi
+}
+
+if [ -d "${path_build}" ]
+then
+    funcUpdateLog
+else
+    mkdir -pv "${path_build}"
+    funcUpdateLog
+fi
+##==========================================================================
+
+##===================================归档====================================
+if $is_workspace
+then
+    xcodebuild clean -workspace ${project}.xcworkspace \
+    -scheme ${target} \
+    -configuration ${configuration}
+
+    xcodebuild archive -workspace ${project}.xcworkspace \
+    -scheme ${target} \
+    -configuration ${configuration} \
+    -archivePath ${path_archive}
+else
+    xcodebuild clean -project ${project}.xcodeproj \
+    -scheme ${target} \
+    -configuration ${configuration}
+
+    xcodebuild archive -project ${project}.xcodeproj \
+    -scheme ${target} \
+    -configuration ${configuration} \
+    -archivePath ${path_archive}
+fi
+##==========================================================================
+
+if [ -d "${path_archive}" ]
+then
+    echo "** Finished archive. Elapsed time: ${SECONDS}s **"
+    echo
+else
+    exit 1
+fi
 
 ##==================================导出ipa==================================
 xcodebuild  -exportArchive \
@@ -140,69 +161,75 @@ xcodebuild  -exportArchive \
 -exportOptionsPlist ${path_export_options}
 ##==========================================================================
 
-mv -f $path_archive $path_package
-mv -f "${path_build}/update_log.txt" $path_package
-
 file_ipa="${path_package}/${target}.ipa"
 
-if [ -f "${file_ipa}" ] ; then
-echo "** Finished export. Elapsed time: ${SECONDS}s **"
-say "打包成功"
+if [ -f "${file_ipa}" ]
+then
+    echo "** Finished export. Elapsed time: ${SECONDS}s **"
+    say "打包成功"
 else
-exit 1
+    exit 1
 fi
 
 echo
 
-if [ -n "${pgyer_api_key}" ] ; then
-#上传到pgyer
-echo "正在上传到pgyer..."
-echo
-curl -F "file=@${file_ipa}" -F "_api_key=${pgyer_api_key}" -F "buildUpdateDescription=${update_log}      *https://github.com/OctMon/EasyExpertApp build(${bundle_build})*" https://www.pgyer.com/apiv2/app/upload
-echo
-say "上传pgyer成功"
-echo
+if [ -n "${pgyer_api_key}" ]
+then
+    #上传到pgyer
+    echo "正在上传到pgyer..."
+    echo
+    curl -F "file=@${file_ipa}" -F "_api_key=${pgyer_api_key}" -F "buildUpdateDescription=${update_log}      *https://github.com/OctMon/EasyExpertApp build(${bundle_build})*" https://www.pgyer.com/apiv2/app/upload
+    echo
+    say "上传pgyer成功"
+    echo
 fi
 
-if [ -n "${fir_api_token}" ] ; then
-#上传到fir
-echo "正在上传到fir..."
-echo
-fir publish "${file_ipa}" -T "${fir_api_token}" -c "${update_log}"
-echo
-say "上传fir成功"
-echo
+if [ -n "${fir_api_token}" ]
+then
+    #上传到fir
+    echo "正在上传到fir..."
+    echo
+    fir publish "${file_ipa}" -T "${fir_api_token}" -c "${update_log}"
+    echo
+    say "上传fir成功"
+    echo
 fi
 
-if [ -n "${pgyer_api_key}" -o  -n "${fir_api_token}" ] ; then
-echo "** Finished upload. Elapsed time: ${SECONDS}s **"
-echo
-while [ "$confirmed" != "y" -a "$confirmed" != "Y" -a "$confirmed" != "n" -a "$confirmed" != "N" ]
-do
-read -p "删除${path_package}? (y/n):" confirmed
-done
-if [ "$confirmed" == "y" -o "$confirmed" == "Y" ]; then
-rm -rf ${path_package}
+if [ -n "${pgyer_api_key}" -o  -n "${fir_api_token}" ]
+then
+    echo "** Finished upload. Elapsed time: ${SECONDS}s **"
+    echo
+    while [ "$confirmed" != "y" -a "$confirmed" != "Y" -a "$confirmed" != "n" -a "$confirmed" != "N" ]
+    do
+        read -p "删除${path_package}? (y/n):" confirmed
+    done
+    if [ "$confirmed" == "y" -o "$confirmed" == "Y" ]; then
+        rm -rf ${path_package}
+    fi
+
+    unset confirmed
 fi
-fi
-unset confirmed
 
 echo
 
 echo "--------------------------------------------------------------------------------"
 echo
 echo "[${bundle_build}] ${target} version ${bundle_version}"
+
 while [ "$confirmed" != "y" -a "$confirmed" != "Y" -a "$confirmed" != "n" -a "$confirmed" != "N" ]
 do
-read -p "提交版本变更到远程仓库? (y/n):" confirmed
+    read -p "提交版本变更到远程仓库? (y/n):" confirmed
 done
-if [ "$confirmed" == "y" -o "$confirmed" == "Y" ]; then
-echo
-git add "${path_info_plist}"
-git commit -m "[${bundle_build}] ${target} version ${bundle_version}"
-git push
+if [ "$confirmed" == "y" -o "$confirmed" == "Y" ]
+then
+    echo
+    git add "${path_info_plist}"
+    git commit -m "[${bundle_build}] ${target} version ${bundle_version}"
+    git push
 fi
+
 unset confirmed
+
 echo
 echo "--------------------------------------------------------------------------------"
 
