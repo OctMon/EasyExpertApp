@@ -226,7 +226,7 @@ then
     #上传到fir
     echo "正在上传到fir..."
     echo
-    fir publish "${file_ipa}" -T "${fir_api_token}" -c "${update_log}"
+    fir publish "${file_ipa}" -T "${fir_api_token}" -c "${update_log}      *https://github.com/OctMon/EasyExpertApp build(${bundle_build})*"
     echo
     say "上传fir成功"
     echo
