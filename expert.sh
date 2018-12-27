@@ -19,6 +19,11 @@ info_appstore="Info"
 info_enterprise="Info"
 ## Release or Debug 默认Release
 configuration="Release"
+## Bitcode开关 默认打开
+compileBitcode=true
+## 签名方式 默认自动签名，如果打包失败，先用Xcode打一次就正常了
+signingStyle="automatic"
+## 工作目录 build目录在.gitignore添加忽略
 path_build="build"
 ## 自动修改build方式  不修改:none 跟随时间变化:date 自动加1:number
 auto_build="number"
@@ -42,30 +47,30 @@ else
     method=${parameter}
 fi
 
-path_export_options=""
 target=""
 info=""
+methodStyle=""
 
 if [ -n ${method} ]
 then
     if [ ${method} = "1" ]
     then
-        path_export_options="EasyExpertApp/development.plist"
+        methodStyle="development"
         target=${target_development}
         info=${info_development}
     elif [ ${method} = "2" ]
     then
-        path_export_options="EasyExpertApp/ad-hoc.plist"
+        methodStyle="ad-hoc"
         target=${target_adhoc}
         info=${info_adhoc}
     elif [ ${method} = "3" ]
     then
-        path_export_options="EasyExpertApp/app-store.plist"
+        methodStyle="app-store"
         target=${target_appstore}
         info=${info_appstore}
     elif [ ${method} = "4" ]
     then
-        path_export_options="EasyExpertApp/enterprise.plist"
+        methodStyle="enterprise"
         target=${target_enterprise}
         info=${info_enterprise}
     else
@@ -93,31 +98,48 @@ bundle_version=`/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" ${
 
 path_package="${path_build}/${target}_${bundle_build}"
 path_archive="${path_package}/${target}.xcarchive"
+
+path_export_options="${path_package}/ExportOptions.plist"
+
+if [ -d "${path_package}" ]
+then
+    echo "目录${path_package}已存在"
+else
+    echo "创建目录${path_package}"
+    mkdir -pv "${path_package}"
+fi
+
+funcExpertOptionFile() {
+    if [ -f "$path_export_options" ]
+    then
+        rm -rf "$path_export_options"
+    fi
+    
+    /usr/libexec/PlistBuddy -c "Add :compileBitcode bool $compileBitcode" "$path_export_options"
+    /usr/libexec/PlistBuddy -c "Add :signingStyle string $signingStyle" "$path_export_options"
+    /usr/libexec/PlistBuddy -c "Add :method string $methodStyle" "$path_export_options"
+}
+
+funcExpertOptionFile
 ##==========================================================================
 
 ##================================填写更新日志================================
-funcUpdateLog() {
-    if [ -d "${path_package}" ]
-    then
-        echo "目录${path_package}已存在"
-    else
-        echo "创建目录${path_package}"
-        mkdir -pv "${path_package}"
-    fi
+path_update_log="${path_package}/UpdateLog.txt"
 
+funcUpdateLog() {
     echo "输入更新日志"
     say "输入更新日志"
 
     if [ -n "${pgyer_api_key}" -o  -n "${fir_api_token}" ]
     then
-        rm -rf "${path_package}/update_log.txt"
-        touch "${path_package}/update_log.txt"
-        vim "${path_package}/update_log.txt"
+        rm -rf "$path_update_log"
+        touch "$path_update_log"
+        vim "$path_update_log"
 
         count=1
         history=""
 
-        for line in $(cat "${path_package}/update_log.txt")
+        for line in $(cat "$path_update_log")
         do
             history+="[${count}] ${line}.  "
             count=$[${count}+1]
