@@ -9,9 +9,9 @@ project=`find . -name *.xcodeproj | awk -F "[/.]" '{print $(NF-1)}'`
 is_workspace="true"
 ## 打包方式对应的TARGETS 默认项目名称
 target_development=${project}
-target_adhoc=${project}
+target_adhoc="${project}Beta"
 target_appstore=${project}
-target_enterprise=${project}
+target_enterprise="${project}Beta"
 ## TARGETS对应的plist 不需要加后缀 默认Info.plist
 info_development="Info"
 info_adhoc="Info"
@@ -26,7 +26,7 @@ signingStyle="automatic"
 ## 工作目录 build目录在.gitignore添加忽略
 path_build="build"
 ## 自动修改build方式  不修改:none 跟随时间变化:date 自动加1:number
-auto_build="number"
+auto_build="date"
 ## pgyer APIKey  https://www.pgyer.com/account/api
 pgyer_api_key=""
 ## fir APIKey  https://fir.im/apps
