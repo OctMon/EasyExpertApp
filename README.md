@@ -22,6 +22,8 @@ $ sh expert.sh
 
 ![打包完成](https://user-gold-cdn.xitu.io/2019/1/4/16818e72fb07d7cb?w=1140&h=730&f=png&s=115440)
 
+![打包目录](https://user-gold-cdn.xitu.io/2019/1/4/16818ee2042a7e26?w=1540&h=872&f=png&s=416221)
+
 如果打包失败，先用Xcode打一次就正常了
 
 ## Author
