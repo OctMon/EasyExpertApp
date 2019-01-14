@@ -79,6 +79,16 @@ then
     fi
 fi
 
+if [ -n "$2" ]
+then
+    target=$2
+fi
+
+if [ -n "$3" ]
+then
+    info=$3
+fi
+
 path_info_plist="${project}/${info}.plist"
 
 if [ "${auto_build}" = "date" ]
