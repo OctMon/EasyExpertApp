@@ -289,6 +289,7 @@ echo "🚀  ${target} (${bundle_build}) successfully published"
 echo "📅  Finished. Elapsed time: ${SECONDS}s"
 echo "🌎  https://github.com/OctMon/EasyExpertApp"
 echo "👍  Tell your friends!"
+echo "📝  ${update_log}"
 echo "--------------------------------------------------------------------------------"
 
 echo
