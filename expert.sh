@@ -103,6 +103,12 @@ then
     buildNumber=$(($buildNumber + 1))
     /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" "$path_info_plist"
 fi
+
+if [ -n "$4" ]
+then
+    /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $4" "$path_info_plist"
+fi
+
 bundle_build=`/usr/libexec/PlistBuddy -c "Print CFBundleVersion" ${path_info_plist}`
 bundle_version=`/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" ${path_info_plist}`
 
