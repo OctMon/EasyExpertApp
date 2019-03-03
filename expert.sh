@@ -211,7 +211,8 @@ fi
 xcodebuild  -exportArchive \
 -archivePath ${path_archive} \
 -exportPath ${path_package} \
--exportOptionsPlist ${path_export_options}
+-exportOptionsPlist ${path_export_options} \
+-allowProvisioningUpdates
 ##==========================================================================
 
 file_ipa="${path_package}/${target}.ipa"
