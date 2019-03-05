@@ -31,6 +31,8 @@ auto_build="date"
 pgyer_api_key=""
 ## fir APIKey  https://fir.im/apps
 fir_api_token=""
+## download URL
+download_url=""
 ##=========================================================================
 
 ##================================选择打包方式================================
@@ -294,7 +296,12 @@ echo "🎉  Congrats"
 
 echo "🚀  ${target} (${bundle_build}) successfully published"
 echo "📅  Finished. Elapsed time: ${SECONDS}s"
-echo "🌎  https://github.com/OctMon/EasyExpertApp"
+if [ -n "${download_url}" ]
+then
+    echo "🌎  ${download_url}"
+else
+    echo "🌎  https://github.com/OctMon/EasyExpertApp"
+fi
 echo "👍  Tell your friends!"
 echo "📝  ${update_log}"
 echo "--------------------------------------------------------------------------------"
